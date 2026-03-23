@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>聲音互動範例入口</title>
+  <style>
+    :root {
+      --bg: #070a12;
+      --panel: rgba(255, 255, 255, 0.06);
+      --panel-2: rgba(255, 255, 255, 0.09);
+      --text: rgba(255, 255, 255, 0.92);
+      --muted: rgba(255, 255, 255, 0.65);
+      --border: rgba(255, 255, 255, 0.12);
+      --shadow: 0 14px 40px rgba(0, 0, 0, 0.45);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(900px 600px at 15% 10%, rgba(59, 130, 246, 0.22), transparent 55%),
+                  radial-gradient(900px 600px at 85% 10%, rgba(16, 185, 129, 0.18), transparent 55%),
+                  var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft JhengHei", Arial, sans-serif;
+    }
+
+    header {
+      padding: 28px 18px 10px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 6px;
+    }
+
+    .home-link {
+      text-decoration: none;
+      color: rgba(255, 255, 255, 0.9);
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 13px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: transform 140ms ease, background-color 140ms ease, border-color 140ms ease;
+      white-space: nowrap;
+    }
+
+    .home-link:hover {
+      transform: translateY(-2px);
+      background: rgba(255, 255, 255, 0.09);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 26px;
+      letter-spacing: 0.5px;
+    }
+
+    .subtitle {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 18px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    .card {
+      position: relative;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px 16px 14px;
+      text-decoration: none;
+      color: inherit;
+      transition: transform 140ms ease, background-color 140ms ease, border-color 140ms ease;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      background: linear-gradient(120deg, rgba(59, 130, 246, 0.28), rgba(16, 185, 129, 0.2), rgba(239, 68, 68, 0.2));
+      opacity: 0;
+      transition: opacity 160ms ease;
+      pointer-events: none;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      background: var(--panel-2);
+      border-color: rgba(255, 255, 255, 0.18);
+    }
+
+    .card:hover::before { opacity: 1; }
+
+    .card > * { position: relative; z-index: 1; }
+
+    .meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .file {
+      color: rgba(255, 255, 255, 0.45);
+      font-size: 12px;
+      letter-spacing: 0.2px;
+      white-space: nowrap;
+    }
+
+    .title {
+      margin: 0;
+      font-size: 16px;
+      line-height: 1.25;
+    }
+
+    .desc {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+      min-height: 42px;
+    }
+
+    .cta {
+      margin-top: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: rgba(255, 255, 255, 0.82);
+      font-size: 13px;
+    }
+
+    .arrow {
+      width: 28px;
+      height: 28px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: rgba(255, 255, 255, 0.06);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+
+    footer {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 18px 18px 34px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="top-actions">
+      <div></div>
+    </div>
+    <h1>聲音互動範例入口</h1>
+    <p class="subtitle">點擊下方卡片即可進入各個互動頁面觀看細部音量/頻譜反應。</p>
+  </header>
+
+  <main>
+    <div class="grid">
+      <a class="card" href="./sound1-1.html">
+        <div class="meta">
+          <span class="tag">Amplitude 音量</span>
+          <span class="file">sound1-1.html</span>
+        </div>
+        <h2 class="title">Hello Volume - 聲音視覺化起點</h2>
+        <p class="desc">以整體音量抓取數值並即時顯示。</p>
+        <div class="cta"><span class="arrow">→</span> 進入範例</div>
+      </a>
+
+      <a class="card" href="./sound1-2.html">
+        <div class="meta">
+          <span class="tag">Amplitude 音量</span>
+          <span class="file">sound1-2.html</span>
+        </div>
+        <h2 class="title">練習一：基礎長條音量表</h2>
+        <p class="desc">把音量轉成水平/長條形式的視覺回饋。</p>
+        <div class="cta"><span class="arrow">→</span> 進入範例</div>
+      </a>
+
+      <a class="card" href="./sound1-3.html">
+        <div class="meta">
+          <span class="tag">Amplitude 音量</span>
+          <span class="file">sound1-3.html</span>
+        </div>
+        <h2 class="title">練習二：紅黃綠警示燈音量表</h2>
+        <p class="desc">依音量區間切換顏色，模擬專業音響警示燈。</p>
+        <div class="cta"><span class="arrow">→</span> 進入範例</div>
+      </a>
+
+      <a class="card" href="./sound1-4.html">
+        <div class="meta">
+          <span class="tag">Amplitude 音量</span>
+          <span class="file">sound1-4.html</span>
+        </div>
+        <h2 class="title">練習三：測謊機歷史軌跡圖</h2>
+        <p class="desc">把音量歷史軌跡記錄下來，形成視覺曲線。</p>
+        <div class="cta"><span class="arrow">→</span> 進入範例</div>
+      </a>
+
+      <a class="card" href="./sound2-1.html">
+        <div class="meta">
+          <span class="tag">Amplitude 音量</span>
+          <span class="file">sound2-1.html</span>
+        </div>
+        <h2 class="title">會呼吸的發光球體</h2>
+        <p class="desc">音量驅動球體大小與發光，呈現呼吸感視覺。</p>
+        <div class="cta"><span class="arrow">→</span> 進入範例</div>
+      </a>
+
+      <a class="card" href="./sound2-2.html">
+        <div class="meta">
+          <span class="tag">Amplitude 音量</span>
+          <span class="file">sound2-2.html</span>
+        </div>
+        <h2 class="title">實戰二：全場閃爍與能量方塊</h2>
+        <p class="desc">音量越大，背景閃爍越強，方塊能量越明顯。</p>
+        <div class="cta"><span class="arrow">→</span> 進入範例</div>
+      </a>
+
+      <a class="card" href="./sound3-1.html">
+        <div class="meta">
+          <span class="tag">Amplitude 音量</span>
+          <span class="file">sound3-1.html</span>
+        </div>
+        <h2 class="title">實戰三：平滑化的能量方塊</h2>
+        <p class="desc">使用平滑（lerp）讓音量變化更順、更有節奏感。</p>
+        <div class="cta"><span class="arrow">→</span> 進入範例</div>
+      </a>
+
+      <a class="card" href="./sound3-2.html">
+        <div class="meta">
+          <span class="tag">Amplitude 音量</span>
+          <span class="file">sound3-2.html</span>
+        </div>
+        <h2 class="title">實戰四：重低音相機震動</h2>
+        <p class="desc">低音觸發震動效果，同時配合能量方塊變化。</p>
+        <div class="cta"><span class="arrow">→</span> 進入範例</div>
+      </a>
+
+      <a class="card" href="./sound3-3.html">
+        <div class="meta">
+          <span class="tag">Amplitude 音量</span>
+          <span class="file">sound3-3.html</span>
+        </div>
+        <h2 class="title">挑戰一：深海裡的史萊姆</h2>
+        <p class="desc">音量控制史萊姆大小與螢光感，呈現懶散遲鈍。</p>
+        <div class="cta"><span class="arrow">→</span> 進入範例</div>
+      </a>
+
+      <a class="card" href="./sound3-4.html">
+        <div class="meta">
+          <span class="tag">Amplitude 音量</span>
+          <span class="file">sound3-4.html</span>
+        </div>
+        <h2 class="title">挑戰二：瘋狂的霓虹派對</h2>
+        <p class="desc">音量門檻觸發霓虹隨機顏色與形狀旋轉。</p>
+        <div class="cta"><span class="arrow">→</span> 進入範例</div>
+      </a>
+
+      <a class="card" href="./sound3-5.html">
+        <div class="meta">
+          <span class="tag">Amplitude 音量</span>
+          <span class="file">sound3-5.html</span>
+        </div>
+        <h2 class="title">挑戰三：賽博龐克故障藝術</h2>
+        <p class="desc">音量高於門檻時切換故障視覺與文字干擾。</p>
+        <div class="cta"><span class="arrow">→</span> 進入範例</div>
+      </a>
+
+      <a class="card" href="./sound4-1.html">
+        <div class="meta">
+          <span class="tag">FFT 頻譜</span>
+          <span class="file">sound4-1.html</span>
+        </div>
+        <h2 class="title">實戰五：樂團分工 (FFT)</h2>
+        <p class="desc">把 bass/mid/treble 能量映射到不同形狀與大小。</p>
+        <div class="cta"><span class="arrow">→</span> 進入範例</div>
+      </a>
+
+      <a class="card" href="./sound4-2.html">
+        <div class="meta">
+          <span class="tag">FFT 頻譜</span>
+          <span class="file">sound4-2.html</span>
+        </div>
+        <h2 class="title">實戰六：經典 64 段頻譜圖</h2>
+        <p class="desc">繪製 64 段頻段能量柱，並用彩虹色呈現。</p>
+        <div class="cta"><span class="arrow">→</span> 進入範例</div>
+      </a>
+
+      <a class="card" href="./sound5-1.html">
+        <div class="meta">
+          <span class="tag">FFT 頻譜</span>
+          <span class="file">sound5-1.html</span>
+        </div>
+        <h2 class="title">Boss A：環形聲波雷達</h2>
+        <p class="desc">把頻譜轉成環形雷達翅膀，同時 bass 跳動核心圓。</p>
+        <div class="cta"><span class="arrow">→</span> 進入範例</div>
+      </a>
+
+      <a class="card" href="./sound5-2.html">
+        <div class="meta">
+          <span class="tag">FFT/Amplitude</span>
+          <span class="file">sound5-2.html</span>
+        </div>
+        <h2 class="title">Boss B：聲控粒子宇宙</h2>
+        <p class="desc">音量驅動粒子速度與生成，並用低音爆發做特效。</p>
+        <div class="cta"><span class="arrow">→</span> 進入範例</div>
+      </a>
+    </div>
+  </main>
+
+  <footer>
+    小提醒：若瀏覽器阻擋音訊自動播放，請先在每個互動頁按下「點擊播放音樂」。
+  </footer>
+</body>
+</html>
+
